@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>인공게임</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="background-grid"></div>
+
+    <section id="authScreen" class="auth-shell">
+      <div class="auth-hero">
+        <p class="kicker">Contract Security Simulator</p>
+        <h1>인공게임</h1>
+        <p class="muted">
+          실제 해킹 재현이 아니라, 보안 사고의 징후와 인과관계를 읽고 대응 방향을 도출하는
+          의뢰형 시뮬레이션.
+        </p>
+      </div>
+
+      <div class="panel auth-panel">
+        <div class="auth-tabs">
+          <button id="showLoginTab" class="auth-tab active" type="button">로그인</button>
+          <button id="showSignupTab" class="auth-tab" type="button">회원가입</button>
+        </div>
+
+        <form id="loginForm" class="auth-card">
+          <p class="section-title">로그인</p>
+          <label class="field">
+            <span>아이디</span>
+            <input name="username" type="text" required />
+          </label>
+          <label class="field">
+            <span>비밀번호</span>
+            <input name="password" type="password" required />
+          </label>
+          <button class="primary-button compact" type="submit">로그인</button>
+        </form>
+
+        <form id="signupForm" class="auth-card hidden">
+          <p class="section-title">회원가입</p>
+          <label class="field">
+            <span>표시 이름</span>
+            <input name="displayName" type="text" placeholder="보안분석가" required />
+          </label>
+          <label class="field">
+            <span>아이디</span>
+            <input name="username" type="text" placeholder="analyst01" required />
+          </label>
+          <label class="field">
+            <span>비밀번호</span>
+            <input name="password" type="password" placeholder="4자 이상" required />
+          </label>
+          <button class="primary-button compact" type="submit">가입하고 시작</button>
+        </form>
+      </div>
+
+      <div id="authMessage" class="auth-message muted"></div>
+    </section>
+
+    <div id="gameShell" class="app-shell hidden">
+      <header class="topbar">
+        <div>
+          <p class="kicker">Incident Contract Board</p>
+          <h1>인공게임</h1>
+          <p id="scenarioMeta" class="muted"></p>
+        </div>
+        <div class="topbar-right">
+          <div class="score-chip">
+            <span>Campaign</span>
+            <strong id="campaignTitle">-</strong>
+          </div>
+          <div class="score-chip">
+            <span>Player</span>
+            <strong id="playerName">-</strong>
+          </div>
+          <button id="helpButton" class="ghost-button help-button" type="button">?</button>
+          <button id="refreshContractsButton" class="ghost-button" type="button">새 의뢰 세트</button>
+          <button id="logoutButton" class="ghost-button" type="button">로그아웃</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="main-column">
+          <section class="panel">
+            <div class="section-row">
+              <div>
+                <p class="section-title">의뢰 보드</p>
+                <h3>회사 리스트에서 하나를 선택하라</h3>
+              </div>
+              <div class="board-badge">완료 <span id="completedCount">0</span> / <span id="totalCount">0</span></div>
+            </div>
+            <div id="contractBoard" class="contract-board"></div>
+          </section>
+
+          <section class="hero panel">
+            <div class="hero-copy">
+              <p class="section-title">계약 브리핑</p>
+              <div class="hero-heading">
+                <div>
+                  <div id="threatBadge" class="threat-badge threat-low">대기</div>
+                  <h2 id="incidentName">의뢰를 선택하라</h2>
+                </div>
+                <div class="turn-box">처리 <span id="turnValue">0</span> / <span id="turnTotal">0</span></div>
+              </div>
+              <p id="incidentBrief" class="lead">
+                로그인 직후 바로 문제를 주지 않는다. 먼저 의뢰 보드에서 회사 계약을 선택한 뒤 내용을 읽고
+                체크리스트를 직접 제출하면 된다.
+              </p>
+            </div>
+            <div class="hero-side">
+              <div class="metric-card"><span>코인</span><strong id="budgetValue">0</strong></div>
+              <div class="metric-card"><span>신뢰도</span><strong id="trustValue">0</strong></div>
+              <div class="metric-card"><span>운영 안정성</span><strong id="opsValue">0</strong></div>
+            </div>
+          </section>
+
+          <section class="incident-grid">
+            <article class="panel">
+              <p class="section-title">사건 정보</p>
+              <div class="info-block"><span>의뢰사</span><p id="clientName">-</p></div>
+              <div class="info-block"><span>주요 표적</span><p id="incidentTarget">-</p></div>
+              <div class="info-block"><span>관찰 증상</span><ul id="symptomList" class="list"></ul></div>
+            </article>
+            <article class="panel">
+              <p class="section-title">계약 조건</p>
+              <div class="info-block"><span>기본 보상</span><p id="contractReward">-</p></div>
+              <div class="info-block"><span>방치 시 결과</span><ul id="consequenceList" class="list"></ul></div>
+              <div class="info-block"><span>현재 목표</span><p id="goalText">의뢰를 선택하면 목표가 표시된다.</p></div>
+            </article>
+          </section>
+
+          <section class="panel">
+            <div class="section-row">
+              <div>
+                <p class="section-title">고정 체크리스트</p>
+                <h3>정답 선택지가 아니라, 공통 대응 목록에서 직접 체크해 제출하라</h3>
+              </div>
+              <div id="budgetHint" class="budget-hint">의뢰를 먼저 선택하라</div>
+            </div>
+            <div id="checklistGrid" class="checklist-grid"></div>
+            <div class="processing-box">
+              <div class="progress-track">
+                <div id="progressBar" class="progress-bar"></div>
+              </div>
+              <p id="processingStatus" class="muted">
+                제출 후 선택 조합에 따라 처리 시간이 계산되며, 완료되면 자동으로 의뢰 선택 화면으로 돌아간다.
+              </p>
+            </div>
+            <button id="resolveButton" class="primary-button" type="button" disabled>체크리스트 제출</button>
+            <div id="resolutionBox" class="resolution-box">의뢰를 선택하고 체크 항목을 고르면 결과가 여기 표시된다.</div>
+          </section>
+
+          <section class="panel">
+            <p class="section-title">처리 로그</p>
+            <div id="timeline" class="timeline"></div>
+          </section>
+        </section>
+
+        <aside class="side-column">
+          <section class="panel">
+            <p class="section-title">랭크 등록</p>
+            <div id="rankPanel" class="rank-panel">
+              <p id="rankIntro" class="muted">16개 의뢰를 모두 완료하면 코인 개수로 랭크를 등록할 수 있다.</p>
+              <form id="rankForm" class="rank-form hidden">
+                <label class="field">
+                  <span>등록 이름</span>
+                  <input id="rankNameInput" type="text" maxlength="20" placeholder="보람회사팀장" />
+                </label>
+                <button class="primary-button compact" type="submit">랭크 등록</button>
+              </form>
+              <p id="rankMessage" class="muted rank-message"></p>
+              <div id="leaderboardList" class="leaderboard-list"></div>
+            </div>
+          </section>
+          <section class="panel">
+            <p class="section-title">NPC 브리핑</p>
+            <div id="advisorList" class="advisor-list"></div>
+          </section>
+          <section class="panel">
+            <p class="section-title">운영 목표</p>
+            <div class="season-card">
+              <strong id="companyName">-</strong>
+              <p id="campaignGoal" class="muted"></p>
+            </div>
+          </section>
+          <section id="summaryPanel" class="panel hidden">
+            <p class="section-title">시즌 결과</p>
+            <h3 id="summaryTitle"></h3>
+            <p id="summaryBody" class="muted"></p>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div id="helpModal" class="modal-backdrop hidden">
+      <section class="modal-card">
+        <div class="modal-head">
+          <div>
+            <p class="section-title">도움말</p>
+            <h3>용어 설명과 참고 링크</h3>
+          </div>
+          <button id="closeHelpButton" class="ghost-button" type="button">닫기</button>
+        </div>
+
+        <div class="manual-grid">
+          <article class="manual-block">
+            <strong>고정 체크리스트</strong>
+            <p>모든 사고에 같은 대응 목록이 열리고, 플레이어가 징후를 보고 직접 필요한 항목을 골라야 한다.</p>
+          </article>
+          <article class="manual-block">
+            <strong>처리 시간</strong>
+            <p>제출 후 선택 조합에 따라 처리 시간이 달라지며, 아무 경우에도 5초를 넘지 않는다. 완료되면 결과가 반영되고 보드로 돌아간다.</p>
+          </article>
+          <article class="manual-block">
+            <strong>피싱</strong>
+            <p>신뢰할 만한 발신자처럼 보이게 만들어 클릭, 로그인, 송금 같은 행동을 유도하는 사회공학 공격.</p>
+            <a href="https://www.cisa.gov/secure-our-world/recognize-and-report-phishing" target="_blank" rel="noreferrer">CISA 피싱 안내</a>
+          </article>
+          <article class="manual-block">
+            <strong>랜섬웨어</strong>
+            <p>파일이나 시스템을 사용할 수 없게 만들고 금전을 요구하는 악성코드 계열 공격.</p>
+            <a href="https://www.cisa.gov/stopransomware/ransomware-faqs" target="_blank" rel="noreferrer">CISA 랜섬웨어 FAQ</a>
+          </article>
+          <article class="manual-block">
+            <strong>DDoS</strong>
+            <p>다수의 요청으로 서비스를 과부하 상태로 만들어 정상 사용자가 접근하지 못하게 하는 공격.</p>
+            <a href="https://csrc.nist.gov/glossary/term/distributed_denial_of_service" target="_blank" rel="noreferrer">NIST DDoS 용어집</a>
+          </article>
+          <article class="manual-block">
+            <strong>침해와 유출</strong>
+            <p>권한 없는 접근, 데이터 복사, 외부 반출로 이어지는 사고를 말한다.</p>
+            <a href="https://csrc.nist.gov/glossary/term/breach" target="_blank" rel="noreferrer">NIST Breach 용어집</a>
+          </article>
+          <article class="manual-block">
+            <strong>추가 참고</strong>
+            <div class="manual-links">
+              <a href="https://www.cisa.gov/resources-tools/resources/understanding-and-responding-distributed-denial-service-attacks" target="_blank" rel="noreferrer">CISA DDoS 대응 가이드</a>
+              <a href="https://www.nist.gov/itl/smallbusinesscyber/cybersecurity-basics/glossary" target="_blank" rel="noreferrer">NIST 사이버보안 기초 용어집</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <template id="advisorTemplate">
+      <article class="advisor-card">
+        <div class="advisor-avatar"></div>
+        <div class="advisor-copy">
+          <strong class="advisor-name"></strong>
+          <span class="advisor-role"></span>
+          <p class="advisor-bio muted"></p>
+          <blockquote class="advisor-quote"></blockquote>
+        </div>
+      </article>
+    </template>
+
+    <template id="contractTemplate">
+      <button class="contract-card" type="button">
+        <div class="contract-main">
+          <span class="contract-client"></span>
+          <strong class="contract-title"></strong>
+        </div>
+        <div class="contract-meta">
+          <span class="contract-threat"></span>
+          <span class="contract-reward"></span>
+        </div>
+      </button>
+    </template>
+
+    <template id="checklistTemplate">
+      <label class="check-item">
+        <input class="check-input" type="checkbox" />
+        <div class="check-copy">
+          <div class="check-top">
+            <strong class="check-label"></strong>
+            <span class="check-kind"></span>
+          </div>
+          <p class="check-summary"></p>
+        </div>
+      </label>
+    </template>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

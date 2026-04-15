@@ -1,0 +1,9 @@
+{
+  "name": "ingong-security-sim",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Security incident simulation game site using Node.js and Python",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
